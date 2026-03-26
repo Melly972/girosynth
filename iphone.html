@@ -1,34 +1,56 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GiroSynth Controller</title>
     <style>
-        body { background: #0a0a0f; color: #e0e0f0; font-family: monospace; text-align: center; padding: 50px 20px; }
-        .btn { background: #00ffcc; border: none; padding: 20px; width: 100%; border-radius: 10px; font-weight: bold; font-size: 1.2rem; }
-        .status { margin: 20px 0; color: #555577; }
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
+        
+        body { background: #0a0a0f; color: #00ffcc; font-family: 'Space Mono', monospace; text-align: center; padding: 40px 20px; }
+        .btn { background: #00ffcc; color: #0a0a0f; border: none; padding: 20px; width: 100%; border-radius: 8px; font-weight: bold; font-size: 1.2rem; cursor: pointer; margin-top: 30px; box-shadow: 0 0 15px rgba(0, 255, 204, 0.4); }
+        .status { margin: 30px 0; color: #555577; font-size: 11px; letter-spacing: 2px; }
     </style>
 </head>
 <body>
-    <h1>GIRO</h1>
-    <div id="status" class="status">Connexion au serveur...</div>
+    <h1 style="letter-spacing:10px; font-weight:400; font-size:40px;">GIRO</h1>
+    <p style="color:#e0e0f0; font-size:11px; letter-spacing:3px;">CONTRÔLEUR GYROSCOPE</p>
+    
+    <div id="status" class="status">INITIALISATION...</div>
+    
     <button id="startBtn" class="btn">ACTIVER LES CAPTEURS</button>
+    <button id="stopBtn" class="btn" style="display:none; background:#ff3366;">STOP</button>
 
     <script>
-        // Récupérer la session dans l'URL (?s=XXXX)
+        // --- CONFIGURATION ---
         const params = new URLSearchParams(window.location.search);
-        const SESSION = params.get('s');
-        const WS_URL = "wss://socketsbay.com/wss/v2/1/demo/";
-        let ws = new WebSocket(WS_URL);
+        const SESSION = params.get('s'); // Récupérer la session (?s=XXXX)
+        const WS_RELAY_URL = "wss://socketsbay.com/wss/v2/1/demo/"; // Le même relais que le Mac
+        
+        let ws;
+        let isTracking = false;
 
-        ws.onopen = () => {
-            document.getElementById('status').textContent = "Connecté ! Appuie sur le bouton.";
-            // Envoyer un ping au Mac
-            ws.send(JSON.stringify({ sid: SESSION, type: 'ping' }));
-        };
+        function connectWS() {
+            document.getElementById('status').textContent = "CONNEXION AU SERVEUR...";
+            ws = new WebSocket(WS_RELAY_URL);
+            
+            ws.onopen = () => {
+                document.getElementById('status').textContent = "CONNECTÉ ! APPUYEZ SUR LE BOUTON.";
+                // Signaler sa présence au Mac
+                ws.send(JSON.stringify({ sid: SESSION, type: 'ping' }));
+            };
+            
+            ws.onclose = () => {
+                document.getElementById('status').textContent = "DÉCONNECTÉ. RECONNEXION...";
+                setTimeout(connectWS, 2000);
+            };
+        }
 
-        document.getElementById('startBtn').onclick = async () => {
+        // --- GESTION DES CAPTEURS ---
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+
+        startBtn.onclick = async () => {
             // ÉTAPE CRUCIALE POUR IOS : Demander la permission
             if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
                 try {
@@ -36,29 +58,37 @@
                     if (permission === 'granted') {
                         startTracking();
                     } else {
-                        alert("Permission refusée");
+                        alert("Permission refusée. Vous devez l'accepter pour que le synthé fonctionne.");
                     }
                 } catch (e) {
-                    alert("Erreur permission : " + e);
+                    alert("Erreur lors de la demande de permission : " + e);
                 }
             } else {
                 // Pour Android ou navigateurs sans système de permission
                 startTracking();
             }
         };
+        
+        stopBtn.onclick = () => {
+            stopTracking();
+        };
 
         function startTracking() {
-            document.getElementById('startBtn').style.display = 'none';
-            document.getElementById('status').textContent = "Envoi des données au Mac...";
+            startBtn.style.display = 'none';
+            stopBtn.style.display = 'block';
+            document.getElementById('status').textContent = "TRANSMISSION EN COURS✓";
+            isTracking = true;
             
             window.addEventListener('deviceorientation', (e) => {
+                if (!isTracking) return;
+                
                 const data = {
                     alpha: e.alpha || 0,
                     beta: e.beta || 0,
                     gamma: e.gamma || 0
                 };
                 
-                if (ws.readyState === WebSocket.OPEN) {
+                if (ws && ws.readyState === WebSocket.OPEN) {
                     ws.send(JSON.stringify({
                         sid: SESSION,
                         type: 'gyro',
@@ -67,6 +97,16 @@
                 }
             });
         }
+        
+        function stopTracking() {
+            stopBtn.style.display = 'none';
+            startBtn.style.display = 'block';
+            document.getElementById('status').textContent = "ARRÊTÉ.";
+            isTracking = false;
+        }
+
+        // Se connecter au lancement
+        connectWS();
     </script>
 </body>
 </html>
