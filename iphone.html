@@ -1,87 +1,72 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html>
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2685.5">
-  <style type="text/css">
-    span.s1 {font-kerning: none}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <title>GiroSynth Controller</title>
+    <style>
+        body { background: #0a0a0f; color: #e0e0f0; font-family: monospace; text-align: center; padding: 50px 20px; }
+        .btn { background: #00ffcc; border: none; padding: 20px; width: 100%; border-radius: 10px; font-weight: bold; font-size: 1.2rem; }
+        .status { margin: 20px 0; color: #555577; }
+    </style>
 </head>
 <body>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b>&lt;!DOCTYPE html&gt;</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b>&lt;html&gt;</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b>&lt;head&gt;</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"&gt;</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">    </span>&lt;title&gt;GiroSynth Controller&lt;/title&gt;</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">    </span>&lt;style&gt;</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">        </span>body { background: #0a0a0f; color: #e0e0f0; font-family: monospace; text-align: center; padding: 50px 20px; }</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">        </span>.btn { background: #00ffcc; border: none; padding: 20px; width: 100%; border-radius: 10px; font-weight: bold; font-size: 1.2rem; }</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">        </span>.status { margin: 20px 0; color: #555577; }</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">    </span>&lt;/style&gt;</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b>&lt;/head&gt;</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b>&lt;body&gt;</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">    </span>&lt;h1&gt;GIRO&lt;/h1&gt;</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">    </span>&lt;div id="status" class="status"&gt;Connexion au serveur...&lt;/div&gt;</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">    </span>&lt;button id="startBtn" class="btn"&gt;ACTIVER LES CAPTEURS&lt;/button&gt;</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000; min-height: 29.0px"><span class="s1"><b></b></span><br></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">    </span>&lt;script&gt;</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">        </span>// Récupérer la session dans l'URL (?s=XXXX)</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">        </span>const params = new URLSearchParams(window.location.search);</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">        </span>const SESSION = params.get('s');</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">        </span>const WS_URL = "wss://socketsbay.com/wss/v2/1/demo/";</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">        </span>let ws = new WebSocket(WS_URL);</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000; min-height: 29.0px"><span class="s1"><b></b></span><br></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">        </span>ws.onopen = () =&gt; {</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">            </span>document.getElementById('status').textContent = "Connecté ! Appuie sur le bouton.";</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">            </span>// Envoyer un ping au Mac</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">            </span>ws.send(JSON.stringify({ sid: SESSION, type: 'ping' }));</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">        </span>};</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000; min-height: 29.0px"><span class="s1"><b></b></span><br></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">        </span>document.getElementById('startBtn').onclick = async () =&gt; {</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">            </span>// ÉTAPE CRUCIALE POUR IOS : Demander la permission</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">            </span>if (typeof DeviceOrientationEvent !== 'undefined' &amp;&amp; typeof DeviceOrientationEvent.requestPermission === 'function') {</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">                </span>try {</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">                    </span>const permission = await DeviceOrientationEvent.requestPermission();</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">                    </span>if (permission === 'granted') {</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">                        </span>startTracking();</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">                    </span>} else {</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">                        </span>alert("Permission refusée");</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">                    </span>}</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">                </span>} catch (e) {</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">                    </span>alert("Erreur permission : " + e);</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">                </span>}</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">            </span>} else {</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">                </span>// Pour Android ou navigateurs sans système de permission</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">                </span>startTracking();</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">            </span>}</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">        </span>};</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000; min-height: 29.0px"><span class="s1"><b></b></span><br></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">        </span>function startTracking() {</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">            </span>document.getElementById('startBtn').style.display = 'none';</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">            </span>document.getElementById('status').textContent = "Envoi des données au Mac...";</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000; min-height: 29.0px"><span class="s1"><b><span class="Apple-converted-space">            </span></b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">            </span>window.addEventListener('deviceorientation', (e) =&gt; {</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">                </span>const data = {</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">                    </span>alpha: e.alpha || 0,</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">                    </span>beta: e.beta || 0,</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">                    </span>gamma: e.gamma || 0</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">                </span>};</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000; min-height: 29.0px"><span class="s1"><b><span class="Apple-converted-space">                </span></b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">                </span>if (ws.readyState === WebSocket.OPEN) {</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">                    </span>ws.send(JSON.stringify({</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">                        </span>sid: SESSION,</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">                        </span>type: 'gyro',</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">                        </span>data: data</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">                    </span>}));</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">                </span>}</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">            </span>});</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">        </span>}</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b><span class="Apple-converted-space">    </span>&lt;/script&gt;</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b>&lt;/body&gt;</b></span></h1>
-<h1 style="margin: 0.0px 0.0px 16.1px 0.0px; font: 24.0px Helvetica; -webkit-text-stroke: #000000"><span class="s1"><b>&lt;/html&gt;</b></span></h1>
+    <h1>GIRO</h1>
+    <div id="status" class="status">Connexion au serveur...</div>
+    <button id="startBtn" class="btn">ACTIVER LES CAPTEURS</button>
+
+    <script>
+        // Récupérer la session dans l'URL (?s=XXXX)
+        const params = new URLSearchParams(window.location.search);
+        const SESSION = params.get('s');
+        const WS_URL = "wss://socketsbay.com/wss/v2/1/demo/";
+        let ws = new WebSocket(WS_URL);
+
+        ws.onopen = () => {
+            document.getElementById('status').textContent = "Connecté ! Appuie sur le bouton.";
+            // Envoyer un ping au Mac
+            ws.send(JSON.stringify({ sid: SESSION, type: 'ping' }));
+        };
+
+        document.getElementById('startBtn').onclick = async () => {
+            // ÉTAPE CRUCIALE POUR IOS : Demander la permission
+            if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+                try {
+                    const permission = await DeviceOrientationEvent.requestPermission();
+                    if (permission === 'granted') {
+                        startTracking();
+                    } else {
+                        alert("Permission refusée");
+                    }
+                } catch (e) {
+                    alert("Erreur permission : " + e);
+                }
+            } else {
+                // Pour Android ou navigateurs sans système de permission
+                startTracking();
+            }
+        };
+
+        function startTracking() {
+            document.getElementById('startBtn').style.display = 'none';
+            document.getElementById('status').textContent = "Envoi des données au Mac...";
+            
+            window.addEventListener('deviceorientation', (e) => {
+                const data = {
+                    alpha: e.alpha || 0,
+                    beta: e.beta || 0,
+                    gamma: e.gamma || 0
+                };
+                
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.send(JSON.stringify({
+                        sid: SESSION,
+                        type: 'gyro',
+                        data: data
+                    }));
+                }
+            });
+        }
+    </script>
 </body>
 </html>
