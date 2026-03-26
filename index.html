@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>GiroSynth — Mac</title>
+    <style>
+        /* ... Insère ici ton CSS d'origine ... */
+        /* Ajout d'un petit correctif pour l'URL du QR */
+        #url-input { background: #111; border: 1px solid #333; color: #00ffcc; padding: 5px; width: 100%; margin-top: 10px; font-size: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>GIROSYNTH</h1>
+            <p class="subtitle">GYROSCOPE × SYNTHÉTISEUR — MAC</p>
+        </header>
+
+        <div class="status-bar">
+            <div class="dot" id="dot"></div>
+            <span id="stxt">CONFIGURER L'URL CI-DESSOUS</span>
+            <span class="sid" id="sid"></span>
+        </div>
+
+        <div class="panel span2">
+            <div class="panel-title">1. Configuration de l'hébergement</div>
+            <p style="font-size: 11px; color: #888; margin-bottom: 10px;">
+                Colle l'URL HTTPS de ton fichier <b>iphone.html</b> ici pour mettre à jour le QR Code :
+            </p>
+            <input type="text" id="controller-url" placeholder="https://ton-pseudo.github.io/iphone.html" oninput="setupQR()">
+        </div>
+
+        <div id="qrcode"></div> 
+        <canvas id="osc" width="860" height="110"></canvas>
+        <button class="play" id="playBtn" onclick="togglePlay()">▶ ACTIVER LE SYNTHÉ</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        const SESSION = Math.random().toString(36).substring(2,8).toUpperCase();
+        document.getElementById('sid').textContent = '#' + SESSION;
+
+        // Nouveau Relais WebSocket (Public Broadcast)
+        const WS_URL = "wss://socketsbay.com/wss/v2/1/demo/"; 
+        let ws;
+
+        function connectWS() {
+            ws = new WebSocket(WS_URL);
+            ws.onopen = () => {
+                setDot('on', 'EN ATTENTE DE L\'IPHONE...');
+            };
+            ws.onmessage = e => {
+                const d = JSON.parse(e.data);
+                // On ne traite que les messages qui ont NOTRE session ID
+                if (d.sid === SESSION) {
+                    if (d.type === 'gyro') handleGyro(d.data);
+                    if (d.type === 'ping') setDot('on', 'IPHONE CONNECTÉ ✓');
+                }
+            };
+        }
+
+        function setupQR() {
+            const baseUrl = document.getElementById('controller-url').value;
+            if(!baseUrl.startsWith('http')) return;
+            
+            const fullUrl = `${baseUrl}?s=${SESSION}`;
+            const qrContainer = document.getElementById('qrcode');
+            qrContainer.innerHTML = '';
+            new QRCode(qrContainer, { text: fullUrl, width: 150, height: 150, colorDark: '#00ffcc', colorLight: '#0a0a0f' });
+            document.getElementById('stxt').textContent = "SCANNE LE QR CODE SUR TON IPHONE";
+        }
+
+        // ... Insère ici ton moteur audio et tes fonctions (noteOn, noteOff, etc.) ...
+        // Modifie juste handleGyro pour qu'il reçoive directement l'objet data
+        function handleGyro(data) {
+            const {alpha, beta, gamma} = data;
+            // ... Ta logique de modulation existante ...
+            gyroState = { beta, gamma };
+            // Mise à jour UI
+            document.getElementById('vB').textContent = beta.toFixed(1) + '°';
+            // etc.
+        }
+    </script>
+</body>
+</html>
