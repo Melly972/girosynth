@@ -1,194 +1,1018 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>GiroSynth — Mac</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&display=swap');
-:root{--bg:#0a0a0f;--panel:#111118;--border:#1e1e2e;--accent:#00ffcc;--accent2:#ff3366;--accent3:#7c3aff;--text:#e0e0f0;--muted:#555577}
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--bg);color:var(--text);font-family:'Space Mono',monospace;min-height:100vh}
-body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,255,204,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,204,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
-.container{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:30px 20px}
-header{text-align:center;margin-bottom:30px}
-h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,8vw,88px);letter-spacing:8px;background:linear-gradient(135deg,var(--accent),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
-.subtitle{color:var(--muted);font-size:11px;letter-spacing:4px;margin-top:6px}
-.status-bar{display:flex;align-items:center;gap:12px;padding:12px 20px;background:var(--panel);border:1px solid var(--border);border-radius:4px;margin-bottom:20px;font-size:11px;letter-spacing:2px}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--muted);transition:all .3s;flex-shrink:0}
-.dot.on{background:var(--accent);box-shadow:0 0 12px rgba(0,255,204,.5);animation:pulse 2s infinite}
-.sid{color:var(--accent);font-weight:700;margin-left:auto;letter-spacing:3px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.panel{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:22px}
-.panel-title{font-size:10px;letter-spacing:4px;color:var(--muted);text-transform:uppercase;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border)}
-.span2{grid-column:1/-1}
-canvas{width:100%;height:110px;display:block}
-#qrcode canvas,#qrcode img{border:2px solid var(--accent);border-radius:4px}
-.url-box{margin-top:10px;padding:8px 12px;background:var(--bg);border:1px solid var(--accent2);border-radius:3px;font-size:10px;color:var(--text);width:100%}
-.note-big{font-family:'Bebas Neue',sans-serif;font-size:56px;color:var(--accent);text-align:center;line-height:1}
-.note-hz{font-size:11px;color:var(--muted);text-align:center;margin-top:4px}
-.play{width:100%;padding:15px;background:transparent;border:1px solid var(--accent);color:var(--accent);font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:6px;cursor:pointer;border-radius:2px;margin-top:14px}
-.play.on{background:var(--accent);color:var(--bg)}
-.ax{display:flex;align-items:center;gap:10px;margin-bottom:5px}
-.ax-l{font-size:10px;color:var(--muted);width:18px}
-.ax-bg{flex:1;height:4px;background:var(--border);position:relative}
-.ax-bar{position:absolute;top:0;bottom:0;transition:all .08s}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GiroSynth - Mac Interface</title>
+    <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
+    <style>
+        /* ============================== */
+        /* == TOUT TON CSS D'ORIGINE EST ICI == */
+        /* ============================== */
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&display=swap');
+        
+        :root {
+            --bg-color: #0a0a0f;
+            --panel-color: #111118;
+            --border-color: #1e1e2e;
+            --accent-color: #00ffcc;
+            --accent-color-dim: rgba(0, 255, 204, 0.1);
+            --accent-color-muted: rgba(0, 255, 204, 0.4);
+            --text-color: #e0e0f0;
+            --muted-text: #555577;
+            --grid-color: rgba(0, 255, 204, 0.03);
+            --glow: 0 0 15px rgba(0, 255, 204, 0.3);
+            --slider-bg: #1a1a24;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Space Mono', monospace;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Grille de fond */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 72px;
+            font-weight: 400;
+            letter-spacing: 12px;
+            color: var(--accent-color);
+            text-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
+            line-height: 1;
+            display: inline-block;
+            position: relative;
+        }
+        
+        h1::after {
+            content: 'BETA';
+            position: absolute;
+            top: 0;
+            right: -40px;
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 2px;
+            background: var(--accent-color);
+            color: var(--bg-color);
+            padding: 2px 5px;
+            border-radius: 2px;
+        }
+
+        .subtitle {
+            color: var(--muted-text);
+            font-size: 11px;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: auto 1fr auto auto;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .panel {
+            background-color: var(--panel-color);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 20px;
+            position: relative;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .panel-title {
+            color: var(--muted-text);
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .panel-value {
+            color: var(--accent-color);
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .connection-panel {
+            grid-column: 1 / -1;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background-color: #555;
+            box-shadow: 0 0 5px rgba(255,255,255,0.1);
+        }
+
+        .status-dot.connected {
+            background-color: var(--accent-color);
+            box-shadow: 0 0 10px var(--accent-color);
+            animation: pulse 2s infinite;
+        }
+
+        .status-text {
+            color: var(--text-color);
+            font-size: 12px;
+            letter-spacing: 1px;
+            flex-grow: 1;
+        }
+        
+        .session-id {
+            color: var(--muted-text);
+            font-size: 10px;
+            background: rgba(255,255,255,0.03);
+            padding: 4px 8px;
+            border-radius: 3px;
+            border: 1px solid var(--border-color);
+        }
+
+        .qr-instructions-panel {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 20px;
+            align-items: center;
+        }
+
+        #qrcode {
+            width: 140px; height: 140px;
+            background: #fff;
+            padding: 5px;
+            border-radius: 4px;
+            border: 2px solid var(--border-color);
+        }
+        
+        #qrcode canvas, #qrcode img {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .instructions ol {
+            list-style: none;
+            counter-reset: item;
+        }
+
+        .instructions li {
+            counter-increment: item;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: var(--text-color);
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .instructions li::before {
+            content: counter(item);
+            margin-right: 10px;
+            color: var(--accent-color);
+            font-weight: bold;
+            width: 15px;
+            text-align: center;
+        }
+        
+        .instructions em {
+            color: var(--accent-color-muted);
+            font-style: normal;
+        }
+
+        #url-input-container {
+            margin-top: 10px;
+            padding: 8px 12px;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        #url-text {
+            color: var(--muted-text);
+            font-size: 10px;
+            font-family: 'Space Mono', monospace;
+            flex-grow: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .copy-btn {
+            background: none; border: none;
+            color: var(--accent-color);
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            cursor: pointer;
+            padding: 0;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        
+        .copy-btn:hover { opacity: 1; }
+
+        .oscilloscope-panel {
+            grid-column: 1 / -1;
+            padding: 10px;
+        }
+
+        #oscilloscope {
+            width: 100%; height: 110px;
+            background-color: rgba(0,0,0,0.3);
+            border-radius: 2px;
+        }
+
+        .data-panel {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: 2fr 1.5fr 1.5fr 1fr;
+            gap: 15px;
+        }
+
+        .data-item {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .data-label {
+            color: var(--muted-text);
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .data-value {
+            font-family: 'Bebas Neue', sans-serif;
+            color: var(--accent-color);
+            font-size: 48px;
+            line-height: 1;
+        }
+
+        .data-unit {
+            font-size: 14px;
+            color: var(--accent-color-muted);
+            margin-left: -5px;
+        }
+        
+        .phone-icon-container {
+            position: relative;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        .phone-icon {
+            width: 30px;
+            height: 55px;
+            border: 2px solid var(--border-color);
+            border-radius: 5px;
+            position: relative;
+        }
+        
+        .phone-icon::before {
+            content: '';
+            position: absolute;
+            top: 4px; left: 50%; transform: translateX(-50%);
+            width: 8px; height: 2px;
+            background: var(--border-color);
+            border-radius: 1px;
+        }
+        
+        .phone-icon::after {
+            content: '';
+            position: absolute;
+            bottom: 3px; left: 50%; transform: translateX(-50%);
+            width: 6px; height: 6px;
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+        }
+
+        .controls-grid {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            color: var(--muted-text);
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: var(--slider-bg);
+            border-radius: 3px;
+            outline: none;
+            border: 1px solid var(--border-color);
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            background: var(--accent-color);
+            border-radius: 2px;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 255, 204, 0.5);
+            transition: all 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            box-shadow: 0 0 10px var(--accent-color);
+            transform: scale(1.1);
+        }
+
+        .play-panel {
+            grid-column: 1 / -1;
+            padding: 0;
+            border: none;
+            background: none;
+        }
+
+        #play-btn {
+            width: 100%;
+            padding: 18px;
+            background-color: transparent;
+            color: var(--accent-color);
+            border: 1px solid var(--accent-color);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 24px;
+            letter-spacing: 8px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+
+        #play-btn:hover {
+            background-color: var(--accent-color-dim);
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.2);
+        }
+
+        #play-btn.playing {
+            background-color: var(--accent-color);
+            color: var(--bg-color);
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.4);
+        }
+        
+        footer {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 10px 0 0 0;
+            color: var(--muted-text);
+            font-size: 9px;
+            letter-spacing: 3px;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 5px var(--accent-color); }
+            50% { box-shadow: 0 0 15px var(--accent-color); }
+            100% { box-shadow: 0 0 5px var(--accent-color); }
+        }
+        
+        /* Styles pour les barres de données */
+        .axes-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+        }
+        
+        .axis-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .axis-label {
+            color: var(--muted-text);
+            font-size: 11px;
+            width: 20px;
+            font-weight: bold;
+        }
+        
+        .axis-bar-bg {
+            flex-grow: 1;
+            height: 4px;
+            background: var(--slider-bg);
+            border-radius: 2px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+        
+        .axis-bar-fill {
+            position: absolute;
+            top: 0; height: 100%;
+            background: var(--accent-color);
+            border-radius: 2px;
+            width: 0%;
+            transition: width 0.1s ease-out;
+            box-shadow: 0 0 5px var(--accent-color-dim);
+        }
+        
+        .axis-value {
+            color: var(--muted-text);
+            font-size: 10px;
+            width: 45px;
+            text-align: right;
+        }
+
+        /* MODIFICATION : Petit ajout CSS pour le nouveau champ de texte */
+        .hosted-url-input {
+            width: 100%; 
+            background: #111; 
+            color: #00ffcc; 
+            border: 1px solid #333; 
+            padding: 5px; 
+            font-size: 10px; 
+            margin-top: 10px;
+            font-family: monospace;
+            border-radius: 3px;
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-  <header>
-    <h1>GIROSYNTH</h1>
-    <p class="subtitle">GYROSCOPE × SYNTHÉTISEUR — MAC</p>
-  </header>
+    <div class="container">
+        <header>
+            <h1>GIROSYNTH</h1>
+            <p class="subtitle">GYROSCOPE × SYNTHÉTISEUR — MAC INTERFACE</p>
+        </header>
 
-  <div class="status-bar">
-    <div class="dot" id="dot"></div>
-    <span id="stxt">CONFIGURER L'URL CI-DESSOUS</span>
-    <span class="sid" id="sid"></span>
-  </div>
+        <div class="main-grid">
+            <div class="panel connection-panel">
+                <div class="status-dot" id="status-dot"></div>
+                <div class="status-text" id="status-text">EN ATTENTE DE CONFIGURATION</div>
+                <div class="session-id" id="session-id">#——</div>
+            </div>
 
-  <div class="grid">
-    <div class="panel span2">
-        <div class="panel-title">1. Configuration (À FAIRE UNE SEULE FOIS)</div>
-        <p style="font-size:10px; color:var(--muted); margin-bottom:8px">Colle l'URL de ton fichier iphone.html sur GitHub Pages :</p>
-        <input type="text" id="ctrl-url" class="url-box" placeholder="https://ton-pseudo.github.io/girosynth/iphone.html" oninput="setupQR()">
-        <div id="qrcode" style="margin-top:15px; display:flex; justify-content:center"></div>
+            <div class="panel qr-instructions-panel">
+                <div id="qrcode"></div>
+                <div class="instructions">
+                    <div class="panel-title" style="margin-bottom: 10px; padding:0; border:none;">COMMENT CONNECTER L'IPHONE</div>
+                    <ol>
+                        <li>Cliquez d'abord sur <em>ACTIVER LE SYNTHÉ</em> ci-dessous</li>
+                        <li>Copiez l'URL HTTPS de votre fichier <b>iphone.html</b> hébergé</li>
+                        <li>Collez-la dans le champ ci-dessous pour mettre à jour le QR Code</li>
+                        <li>Scannez avec Safari iOS et autorisez les capteurs</li>
+                    </ol>
+                    
+                    <input type="text" id="controller-url-input" placeholder="Collez l'URL HTTPS de votre iphone.html hébergé ici..." class="hosted-url-input">
+                    
+                    <div id="url-input-container">
+                        <div id="url-text">Lien détecté après collage...</div>
+                        <button class="copy-btn" id="copy-btn">COPIER</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel oscilloscope-panel">
+                <div class="panel-header">
+                    <div class="panel-title">OSCILLOSCOPE</div>
+                </div>
+                <canvas id="oscilloscope"></canvas>
+            </div>
+
+            <div class="panel controls-grid">
+                <div class="panel-header" style="grid-column: 1 / -1; margin-bottom: 5px;">
+                    <div class="panel-title">PARAMÈTRES SYNTHÉ</div>
+                </div>
+                
+                <div class="control-group">
+                    <label>Volume: <span id="vol-val" class="panel-value">70%</span></label>
+                    <input type="range" id="volume" min="0" max="100" value="70">
+                </div>
+                
+                <div class="control-group">
+                    <label>Filtre (Cutoff): <span id="cutoff-val" class="panel-value">2000Hz</span></label>
+                    <input type="range" id="cutoff" min="50" max="10000" value="2000">
+                </div>
+                
+                <div class="control-group">
+                    <label>Resonance: <span id="res-val" class="panel-value">5</span></label>
+                    <input type="range" id="resonance" min="0" max="20" value="5" step="0.1">
+                </div>
+                
+                <div class="control-group">
+                    <label>Vibrato (LFO): <span id="lfo-val" class="panel-value">5Hz</span></label>
+                    <input type="range" id="lfo" min="0" max="20" value="5" step="0.1">
+                </div>
+            </div>
+
+            <div class="panel data-panel">
+                <div class="data-item">
+                    <div class="data-label">NOTE JOUÉE</div>
+                    <div class="data-value" id="note-name">A<span class="data-unit">3</span></div>
+                </div>
+                <div class="data-item">
+                    <div class="data-label">FRÉQUENCE</div>
+                    <div class="data-value" id="note-freq">220<span class="data-unit">Hz</span></div>
+                </div>
+                <div class="data-item axes-container">
+                    <div class="axis-row">
+                        <div class="axis-label">β</div>
+                        <div class="axis-bar-bg"><div class="axis-bar-fill" id="bar-beta" style="width: 50%; left: 25%;"></div></div>
+                        <div class="axis-value" id="val-beta">0°</div>
+                    </div>
+                    <div class="axis-row">
+                        <div class="axis-label">γ</div>
+                        <div class="axis-bar-bg"><div class="axis-bar-fill" id="bar-gamma" style="width: 50%; left: 25%;"></div></div>
+                        <div class="axis-value" id="val-gamma">0°</div>
+                    </div>
+                </div>
+                <div class="data-item">
+                    <div class="phone-icon-container">
+                        <div class="phone-icon"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="play-panel">
+                <button id="play-btn">▶ ACTIVER LE SYNTHÉ</button>
+            </div>
+            
+            <footer>
+                © 2023 GIROSYNTH LABS — EXPÉRIENCE AUDIO-SENSORIELLE
+            </footer>
+        </div>
     </div>
 
-    <div class="panel span2">
-      <div class="panel-title">Oscilloscope</div>
-      <canvas id="osc" width="860" height="110"></canvas>
-    </div>
+    <script>
+        /* ============================== */
+        /* == TOUT TON JS D'ORIGINE EST ICI == */
+        /* ============================== */
+        
+        // --- INITIALISATION DES VARIABLES ---
+        
+        // MODIFICATION : Identifiant de session unique pour ce Mac
+        const SESSION = Math.random().toString(36).substring(2, 8).toUpperCase();
+        document.getElementById('session-id').textContent = '#' + SESSION;
+        
+        // Éléments UI
+        const statusDot = document.getElementById('status-dot');
+        const statusText = document.getElementById('status-text');
+        const playBtn = document.getElementById('play-btn');
+        const qrcodeContainer = document.getElementById('qrcode');
+        
+        // Données d'état
+        let isPlaying = false;
+        let isAudioContextStarted = false;
+        let lastGyroData = { beta: 0, gamma: 0 };
+        let currentNoteIndex = 57; // La = 220Hz
 
-    <div class="panel">
-      <div class="panel-title">Gyroscope iPhone</div>
-      <div class="axes">
-        <div class="ax"><span class="ax-l">β</span><div class="ax-bg"><div class="ax-bar" id="bB" style="background:var(--accent); width:50%; left:25%"></div></div><span id="vB">0°</span></div>
-        <div class="ax"><span class="ax-l">γ</span><div class="ax-bg"><div class="ax-bar" id="bG" style="background:var(--accent3); width:50%; left:25%"></div></div><span id="vG">0°</span></div>
-      </div>
-    </div>
+        // --- MOTEUR AUDIO (WEB AUDIO API) ---
+        let audioCtx, masterGain, biquadFilter, lfo, lfoGain;
+        let oscillators = [];
+        
+        // Notes musicales (La2 à La4)
+        const noteNames = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+        const noteFrequencies = [];
+        for (let i = 0; i < 60; i++) {
+            noteFrequencies.push(440 * Math.pow(2, (i + 48 - 69) / 12));
+        }
 
-    <div class="panel">
-      <div class="panel-title">Note Jouée</div>
-      <div class="note-big" id="noteN">—</div>
-      <div class="note-hz" id="noteHz">— Hz</div>
-    </div>
-  </div>
+        // --- INITIALISATION AUDIO ---
+        function initAudio() {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Gain Principal (Master Volume)
+            masterGain = audioCtx.createGain();
+            const volSlider = document.getElementById('volume');
+            masterGain.gain.setValueAtTime(volSlider.value / 100 * 0.3, audioCtx.currentTime);
+            
+            // Filtre Biquad
+            biquadFilter = audioCtx.createBiquadFilter();
+            biquadFilter.type = "lowpass";
+            biquadFilter.frequency.setValueAtTime(document.getElementById('cutoff').value, audioCtx.currentTime);
+            biquadFilter.Q.setValueAtTime(document.getElementById('resonance').value, audioCtx.currentTime);
+            
+            // LFO pour Vibrato
+            lfo = audioCtx.createOscillator();
+            lfo.type = 'sine';
+            lfo.frequency.setValueAtTime(document.getElementById('lfo').value, audioCtx.currentTime);
+            
+            lfoGain = audioCtx.createGain();
+            lfoGain.gain.setValueAtTime(0, audioCtx.currentTime); // LFO désactivé par défaut
+            
+            // Connexions
+            lfo.connect(lfoGain);
+            // On connectera lfoGain aux oscillateurs quand ils seront créés
+            
+            biquadFilter.connect(masterGain);
+            masterGain.connect(audioCtx.destination);
+            
+            // Démarrer LFO
+            lfo.start();
+            
+            isAudioContextStarted = true;
+            initOscilloscope(masterGain);
+        }
 
-  <button class="play" id="playBtn" onclick="togglePlay()">▶ ACTIVER LE SYNTHÉ</button>
-</div>
+        // --- GESTION DES OSCILLATEURS ---
+        function createOscillators() {
+            // Créer deux oscillateurs pour un son plus riche
+            const osc1 = audioCtx.createOscillator();
+            osc1.type = 'sawtooth';
+            osc1.frequency.setValueAtTime(noteFrequencies[currentNoteIndex], audioCtx.currentTime);
+            
+            const osc2 = audioCtx.createOscillator();
+            osc2.type = 'square';
+            osc2.frequency.setValueAtTime(noteFrequencies[currentNoteIndex] * 1.005, audioCtx.currentTime); // Légère désaccordage
+            osc2.detune.setValueAtTime(5, audioCtx.currentTime);
+            
+            // Enveloppe d'amplitude
+            const ampEnvelope = audioCtx.createGain();
+            ampEnvelope.gain.setValueAtTime(0, audioCtx.currentTime);
+            
+            // Connexions
+            osc1.connect(ampEnvelope);
+            osc2.connect(ampEnvelope);
+            ampEnvelope.connect(biquadFilter);
+            
+            // Connecter LFO à la fréquence des oscillateurs (vibrato)
+            lfoGain.connect(osc1.frequency);
+            lfoGain.connect(osc2.frequency);
+            
+            oscillators = [osc1, osc2, ampEnvelope];
+            
+            // Démarrer oscillateurs
+            osc1.start();
+            osc2.start();
+        }
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script>
-const SESSION = Math.random().toString(36).substring(2,8).toUpperCase();
-document.getElementById('sid').textContent = '#' + SESSION;
+        // --- ÉVÉNEMENTS UI ---
+        
+        // MODIFICATION DE L'HÉBERGEMENT
+        // Au lieu de construire la page, on initialise juste le QR Code
+        const qrcode = new QRCode(qrcodeContainer, {
+            text: "EN ATTENTE D'URL",
+            width: 130,
+            height: 130,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
 
-const WS_URL = "wss://socketsbay.com/wss/v2/1/demo/";
-let ws, audioCtx, filt, masterGain, lfo, lfoGain, analyser, playing=false;
-let gyroState = { beta: 0, gamma: 0 };
-
-function connectWS() {
-    ws = new WebSocket(WS_URL);
-    ws.onmessage = e => {
-        try {
-            const d = JSON.parse(e.data);
-            if (d.sid === SESSION) {
-                if (d.type === 'gyro') handleGyro(d.data);
-                if (d.type === 'ping') setDot('on', 'IPHONE CONNECTÉ ✓');
+        // MODIFICATION : Fonction pour mettre à jour le QR avec l'URL hébergée
+        function updateHostedQR() {
+            const hostedUrl = document.getElementById('controller-url-input').value;
+            if (!hostedUrl.startsWith('http')) {
+                statusText.textContent = "ERREUR : L'URL DOIT COMMENCER PAR HTTP/HTTPS";
+                statusDot.className = 'status-dot';
+                return;
             }
-        } catch(err) {}
-    };
-    ws.onclose = () => setTimeout(connectWS, 2000);
-}
+            
+            // On ajoute l'ID de session à l'URL hébergée
+            const fullUrl = `${hostedUrl}?s=${SESSION}`;
+            
+            qrcode.clear();
+            qrcode.makeCode(fullUrl);
+            
+            document.getElementById('url-text').textContent = fullUrl;
+            document.getElementById('stxt').textContent = "SCANNÉ ET LIEN HÉBERGÉ DÉTECTÉ";
+            
+            // Démarrer la connexion WebSocket si l'audio est prêt
+            if (isAudioContextStarted) {
+                initWebSocket();
+            }
+        }
+        
+        // MODIFICATION : Écouter le collage de l'URL
+        document.getElementById('controller-url-input').addEventListener('input', updateHostedQR);
 
-function setupQR() {
-    const val = document.getElementById('ctrl-url').value;
-    if (!val.startsWith('http')) return;
-    const url = val + "?s=" + SESSION;
-    document.getElementById('qrcode').innerHTML = "";
-    new QRCode(document.getElementById('qrcode'), { text: url, width: 140, height: 140, colorDark: "#00ffcc", colorLight: "#0a0a0f" });
-    document.getElementById('stxt').textContent = "SCANNE LE QR CODE SUR TON IPHONE";
-}
+        // Bouton Play/Stop
+        playBtn.addEventListener('click', function() {
+            if (!isAudioContextStarted) {
+                initAudio();
+                initOscilloscope(masterGain);
+                
+                statusText.textContent = "COPIEZ L'URL DE IPHONE.HTML CI-DESSUS";
+                playBtn.textContent = "⏹ ARRÊTER LE SYNTHÉ";
+                playBtn.classList.add('playing');
+                isPlaying = true;
+                
+                updateHostedQR(); // Initialiser avec l'URL par défaut si présente
+            } else if (isPlaying) {
+                // Arrêter le son (enveloppe)
+                if (oscillators.length > 0) {
+                    const gainNode = oscillators[2];
+                    gainNode.gain.cancelScheduledValues(audioCtx.currentTime);
+                    gainNode.gain.setValueAtTime(gainNode.gain.value, audioCtx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+                }
+                playBtn.textContent = "▶ ACTIVER LE SYNTHÉ";
+                playBtn.classList.remove('playing');
+                isPlaying = false;
+            } else {
+                playBtn.textContent = "⏹ ARRÊTER LE SYNTHÉ";
+                playBtn.classList.add('playing');
+                isPlaying = true;
+            }
+        });
+        
+        // Bouton Copier
+        document.getElementById('copy-btn').addEventListener('click', function() {
+            const hostedUrl = document.getElementById('controller-url-input').value;
+            const fullUrl = `${hostedUrl}?s=${SESSION}`;
+            navigator.clipboard.writeText(fullUrl).then(() => {
+                const originalText = this.textContent;
+                this.textContent = "COPIÉ !";
+                this.style.color = "white";
+                setTimeout(() => {
+                    this.textContent = originalText;
+                    this.style.color = "";
+                }, 2000);
+            });
+        });
 
-function handleGyro(data) {
-    gyroState = data;
-    document.getElementById('vB').textContent = data.beta.toFixed(1) + '°';
-    document.getElementById('vG').textContent = data.gamma.toFixed(1) + '°';
-    updateBars(data);
-}
+        // Sliders
+        setupSlider('volume', 'vol-val', '%', v => masterGain && masterGain.gain.setValueAtTime(v/100 * 0.3, audioCtx.currentTime));
+        setupSlider('cutoff', 'cutoff-val', 'Hz', v => biquadFilter && biquadFilter.frequency.setValueAtTime(v, audioCtx.currentTime));
+        setupSlider('resonance', 'res-val', '', v => biquadFilter && biquadFilter.Q.setValueAtTime(v, audioCtx.currentTime));
+        setupSlider('lfo', 'lfo-val', 'Hz', v => lfo && lfo.frequency.setValueAtTime(v, audioCtx.currentTime));
 
-function updateBars(d) {
-    const b = document.getElementById('bB');
-    const p = (d.beta + 90) / 180 * 100;
-    b.style.width = Math.abs(p-50) + "%";
-    b.style.left = Math.min(p, 50) + "%";
-}
+        function setupSlider(id, valId, unit, onChange) {
+            const slider = document.getElementById(id);
+            const valDisplay = document.getElementById(valId);
+            slider.addEventListener('input', function() {
+                valDisplay.textContent = this.value + unit;
+                onChange(this.value);
+            });
+        }
 
-async function startAudio() {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    analyser = audioCtx.createAnalyser();
-    filt = audioCtx.createBiquadFilter();
-    filt.type = 'lowpass';
-    masterGain = audioCtx.createGain();
-    
-    lfo = audioCtx.createOscillator();
-    lfoGain = audioCtx.createGain();
-    lfo.connect(lfoGain);
-    lfo.start();
+        // --- GESTION DU GYROSCOPE (DONNÉES DU TÉLÉPHONE) ---
+        function handleGyroData(data) {
+            lastGyroData = data;
+            
+            // Mise à jour de l'UI (Chiffres)
+            document.getElementById('val-beta').textContent = data.beta.toFixed(0) + '°';
+            document.getElementById('val-gamma').textContent = data.gamma.toFixed(0) + '°';
+            
+            // Mise à jour de l'UI (Barres)
+            updateAxisBar('bar-beta', data.beta, 90); // Beta: -90 à 90
+            updateAxisBar('bar-gamma', data.gamma, 90); // Gamma: -90 à 90
+            
+            // --- MODULATION DU SON ---
+            if (!isPlaying || !isAudioContextStarted) return;
+            
+            // 1. Beta : Contrôle de la Note (Pitch)
+            // Mapper -45° à 45° sur une gamme de notes (index 40 à 70)
+            const betaNormalized = Math.max(-45, Math.min(45, data.beta));
+            const noteIndex = Math.round(((betaNormalized + 45) / 90) * 30 + 40);
+            
+            if (noteIndex !== currentNoteIndex) {
+                currentNoteIndex = noteIndex;
+                const freq = noteFrequencies[currentNoteIndex];
+                
+                // Mettre à jour les oscillateurs
+                if (oscillators.length > 0) {
+                    oscillators[0].frequency.setTargetAtTime(freq, audioCtx.currentTime, 0.03);
+                    oscillators[1].frequency.setTargetAtTime(freq * 1.005, audioCtx.currentTime, 0.03);
+                }
+                
+                // Mettre à jour l'UI Note
+                const octave = Math.floor(currentNoteIndex / 12) - 1;
+                const noteName = noteNames[currentNoteIndex % 12];
+                document.getElementById('note-name').innerHTML = `${noteName}<span class="data-unit">${octave}</span>`;
+                document.getElementById('note-freq').innerHTML = `${Math.round(freq)}<span class="data-unit">Hz</span>`;
+                
+                // Si c'est la première note, on l'active (Attack)
+                if (oscillators.length > 0 && oscillators[2].gain.value < 0.01) {
+                    const gainNode = oscillators[2];
+                    gainNode.gain.cancelScheduledValues(audioCtx.currentTime);
+                    gainNode.gain.setValueAtTime(0.001, audioCtx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(1, audioCtx.currentTime + 0.05); // Attack rapide
+                }
+            }
+            
+            // 2. Gamma : Contrôle du Vibrato (LFO Depth)
+            // Mapper 0° à 60° (inclinaison latérale) sur l'intensité du LFO
+            const gammaAbs = Math.abs(data.gamma);
+            const lfoDepth = Math.max(0, Math.min(1, gammaAbs / 60));
+            
+            if (lfoGain) {
+                // L'intensité du vibrato dépend de la fréquence fondamentale (max 5%)
+                const baseFreq = noteFrequencies[currentNoteIndex];
+                lfoGain.gain.setTargetAtTime(lfoDepth * baseFreq * 0.05, audioCtx.currentTime, 0.1);
+            }
+        }
+        
+        function updateAxisBar(id, value, maxVal) {
+            const bar = document.getElementById(id);
+            // Convertir la valeur (-maxVal à maxVal) en pourcentage (0% à 100%)
+            const percentage = ((value + maxVal) / (maxVal * 2)) * 100;
+            const constrained = Math.max(0, Math.min(100, percentage));
+            
+            // Styliser la barre pour qu'elle parte du centre
+            if (constrained > 50) {
+                bar.style.width = (constrained - 50) + '%';
+                bar.style.left = '50%';
+            } else {
+                bar.style.width = (50 - constrained) + '%';
+                bar.style.left = constrained + '%';
+            }
+        }
 
-    filt.connect(masterGain);
-    masterGain.connect(analyser);
-    analyser.connect(audioCtx.destination);
-    
-    // Boucle de modulation
-    const loop = () => {
-        if(!playing) return;
-        const bNorm = (Math.max(-90, Math.min(90, gyroState.beta)) + 90) / 180;
-        filt.frequency.setTargetAtTime(200 + bNorm * 8000, audioCtx.currentTime, 0.1);
-        const gNorm = Math.abs(gyroState.gamma) / 90;
-        lfoGain.gain.setTargetAtTime(gNorm * 50, audioCtx.currentTime, 0.1);
-        requestAnimationFrame(loop);
-    };
-    loop();
-    drawOsc();
-}
+        // --- OSCILLOSCOPE (VISUALISATION) ---
+        function initOscilloscope(sourceNode) {
+            const canvas = document.getElementById('oscilloscope');
+            const ctx = canvas.getContext('2d');
+            const analyser = audioCtx.createAnalyser();
+            analyser.fftSize = 2048;
+            sourceNode.connect(analyser);
+            
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            
+            // Ajuster la résolution du canvas
+            function resize() {
+                canvas.width = canvas.parentElement.clientWidth - 20;
+                canvas.height = 110;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+            
+            function draw() {
+                if (!isPlaying && !isAudioContextStarted) {
+                    // Effacer si arrêté
+                    ctx.fillStyle = 'rgba(10, 10, 15, 0.3)';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.lineWidth = 2;
+                    ctx.strokeStyle = '#1e1e2e';
+                    ctx.beginPath();
+                    ctx.moveTo(0, canvas.height/2);
+                    ctx.lineTo(canvas.width, canvas.height/2);
+                    ctx.stroke();
+                    requestAnimationFrame(draw);
+                    return;
+                }
+                
+                requestAnimationFrame(draw);
+                analyser.getByteTimeDomainData(dataArray);
+                
+                ctx.fillStyle = 'rgba(10, 10, 15, 0.3)'; // Fond transparent pour effet de traîne
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = '#00ffcc'; // Couleur d'accent
+                ctx.beginPath();
+                
+                const sliceWidth = canvas.width * 1.0 / bufferLength;
+                let x = 0;
+                
+                for (let i = 0; i < bufferLength; i++) {
+                    const v = dataArray[i] / 128.0;
+                    const y = v * canvas.height / 2;
+                    
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                    x += sliceWidth;
+                }
+                
+                ctx.lineTo(canvas.width, canvas.height / 2);
+                ctx.stroke();
+            }
+            draw();
+        }
 
-function togglePlay() {
-    if(!playing) {
-        startAudio();
-        playing = true;
-        connectWS();
-        document.getElementById('playBtn').classList.add('on');
-        // Son de test
-        const o = audioCtx.createOscillator();
-        o.type = 'sawtooth';
-        o.frequency.value = 220;
-        o.connect(filt);
-        o.start();
-        document.getElementById('noteN').textContent = "A3";
-    }
-}
-
-function drawOsc() {
-    requestAnimationFrame(drawOsc);
-    const cv = document.getElementById('osc'), c = cv.getContext('2d'), W = cv.width, H = cv.height;
-    c.fillStyle = '#0a0a0f'; c.fillRect(0,0,W,H);
-    if (!analyser || !playing) return;
-    const buf = new Float32Array(analyser.fftSize);
-    analyser.getFloatTimeDomainData(buf);
-    c.lineWidth = 2; c.strokeStyle = '#00ffcc'; c.beginPath();
-    for(let i=0; i<buf.length; i++) {
-        const x = i/buf.length*W, y = (1-(buf[i]+1)/2)*H;
-        i===0 ? c.moveTo(x,y) : c.lineTo(x,y);
-    }
-    c.stroke();
-}
-
-function setDot(cls, txt) {
-    document.getElementById('dot').className = 'dot ' + cls;
-    document.getElementById('stxt').textContent = txt;
-}
-</script>
+        // --- CONNEXION WEBSOCKET (COMMUNICATION IPHONE) ---
+        let socket;
+        
+        function initWebSocket() {
+            // MODIFICATION : Utilisation d'un relais public Pub/Sub qui fonctionne
+            // const socketUrl = "wss://ws.ifelse.io"; // OLD Echo server
+            const WS_RELAY_URL = "wss://socketsbay.com/wss/v2/1/demo/"; // NEW Working Pub/Sub relay
+            
+            statusText.textContent = "CONNEXION AU SERVEUR...";
+            
+            if (socket) {
+                socket.close(); // Fermer l'ancienne connexion si elle existe
+            }
+            
+            socket = new WebSocket(WS_RELAY_URL);
+            
+            socket.onopen = function(e) {
+                console.log("[WS] Connecté au relais.");
+                statusDot.className = 'status-dot'; // Gris (attente téléphone)
+                statusText.textContent = "EN ATTENTE DU TÉLÉPHONE...";
+                
+                // S'assurer que les oscillateurs sont prêts
+                if (isAudioContextStarted && oscillators.length === 0) {
+                    createOscillators();
+                }
+            };
+            
+            socket.onmessage = function(event) {
+                try {
+                    const data = JSON.parse(event.data);
+                    
+                    // MODIFICATION : On ne traite que les messages de NOTRE session
+                    if (data.sid === SESSION) {
+                        if (data.type === 'gyro') {
+                            handleGyroData(data.data);
+                            if (statusDot.className !== 'status-dot connected') {
+                                statusDot.className = 'status-dot connected';
+                                statusText.textContent = "IPHONE CONNECTÉ✓";
+                            }
+                        } else if (data.type === 'ping') {
+                            // Le téléphone signale sa présence
+                            statusDot.className = 'status-dot connected';
+                            statusText.textContent = "IPHONE DÉTECTÉ✓";
+                            console.log("[WS] Ping reçu du téléphone.");
+                        }
+                    }
+                } catch (err) {
+                    // Ignorer les messages mal formés
+                }
+            };
+            
+            socket.onclose = function(event) {
+                console.log("[WS] Déconnecté.");
+                statusDot.className = 'status-dot';
+                if (isPlaying) {
+                    statusText.textContent = "ERREUR DE CONNEXION. RECO...";
+                    // Tenter de reconnecter après un court délai
+                    setTimeout(initWebSocket, 2000);
+                } else {
+                    statusText.textContent = "DÉCONNECTÉ.";
+                }
+            };
+            
+            socket.onerror = function(error) {
+                console.log(`[WS] Erreur: ${error.message}`);
+                statusText.textContent = "ERREUR RÉSEAU.";
+            };
+        }
+    </script>
 </body>
 </html>
