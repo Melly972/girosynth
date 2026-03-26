@@ -1,85 +1,194 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>GiroSynth — Mac</title>
-    <style>
-        /* ... Insère ici ton CSS d'origine ... */
-        /* Ajout d'un petit correctif pour l'URL du QR */
-        #url-input { background: #111; border: 1px solid #333; color: #00ffcc; padding: 5px; width: 100%; margin-top: 10px; font-size: 10px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GiroSynth — Mac</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&display=swap');
+:root{--bg:#0a0a0f;--panel:#111118;--border:#1e1e2e;--accent:#00ffcc;--accent2:#ff3366;--accent3:#7c3aff;--text:#e0e0f0;--muted:#555577}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Space Mono',monospace;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,255,204,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,204,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+.container{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:30px 20px}
+header{text-align:center;margin-bottom:30px}
+h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,8vw,88px);letter-spacing:8px;background:linear-gradient(135deg,var(--accent),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.subtitle{color:var(--muted);font-size:11px;letter-spacing:4px;margin-top:6px}
+.status-bar{display:flex;align-items:center;gap:12px;padding:12px 20px;background:var(--panel);border:1px solid var(--border);border-radius:4px;margin-bottom:20px;font-size:11px;letter-spacing:2px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted);transition:all .3s;flex-shrink:0}
+.dot.on{background:var(--accent);box-shadow:0 0 12px rgba(0,255,204,.5);animation:pulse 2s infinite}
+.sid{color:var(--accent);font-weight:700;margin-left:auto;letter-spacing:3px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:22px}
+.panel-title{font-size:10px;letter-spacing:4px;color:var(--muted);text-transform:uppercase;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.span2{grid-column:1/-1}
+canvas{width:100%;height:110px;display:block}
+#qrcode canvas,#qrcode img{border:2px solid var(--accent);border-radius:4px}
+.url-box{margin-top:10px;padding:8px 12px;background:var(--bg);border:1px solid var(--accent2);border-radius:3px;font-size:10px;color:var(--text);width:100%}
+.note-big{font-family:'Bebas Neue',sans-serif;font-size:56px;color:var(--accent);text-align:center;line-height:1}
+.note-hz{font-size:11px;color:var(--muted);text-align:center;margin-top:4px}
+.play{width:100%;padding:15px;background:transparent;border:1px solid var(--accent);color:var(--accent);font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:6px;cursor:pointer;border-radius:2px;margin-top:14px}
+.play.on{background:var(--accent);color:var(--bg)}
+.ax{display:flex;align-items:center;gap:10px;margin-bottom:5px}
+.ax-l{font-size:10px;color:var(--muted);width:18px}
+.ax-bg{flex:1;height:4px;background:var(--border);position:relative}
+.ax-bar{position:absolute;top:0;bottom:0;transition:all .08s}
+</style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>GIROSYNTH</h1>
-            <p class="subtitle">GYROSCOPE × SYNTHÉTISEUR — MAC</p>
-        </header>
+<div class="container">
+  <header>
+    <h1>GIROSYNTH</h1>
+    <p class="subtitle">GYROSCOPE × SYNTHÉTISEUR — MAC</p>
+  </header>
 
-        <div class="status-bar">
-            <div class="dot" id="dot"></div>
-            <span id="stxt">CONFIGURER L'URL CI-DESSOUS</span>
-            <span class="sid" id="sid"></span>
-        </div>
+  <div class="status-bar">
+    <div class="dot" id="dot"></div>
+    <span id="stxt">CONFIGURER L'URL CI-DESSOUS</span>
+    <span class="sid" id="sid"></span>
+  </div>
 
-        <div class="panel span2">
-            <div class="panel-title">1. Configuration de l'hébergement</div>
-            <p style="font-size: 11px; color: #888; margin-bottom: 10px;">
-                Colle l'URL HTTPS de ton fichier <b>iphone.html</b> ici pour mettre à jour le QR Code :
-            </p>
-            <input type="text" id="controller-url" placeholder="https://ton-pseudo.github.io/iphone.html" oninput="setupQR()">
-        </div>
-
-        <div id="qrcode"></div> 
-        <canvas id="osc" width="860" height="110"></canvas>
-        <button class="play" id="playBtn" onclick="togglePlay()">▶ ACTIVER LE SYNTHÉ</button>
+  <div class="grid">
+    <div class="panel span2">
+        <div class="panel-title">1. Configuration (À FAIRE UNE SEULE FOIS)</div>
+        <p style="font-size:10px; color:var(--muted); margin-bottom:8px">Colle l'URL de ton fichier iphone.html sur GitHub Pages :</p>
+        <input type="text" id="ctrl-url" class="url-box" placeholder="https://ton-pseudo.github.io/girosynth/iphone.html" oninput="setupQR()">
+        <div id="qrcode" style="margin-top:15px; display:flex; justify-content:center"></div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script>
-        const SESSION = Math.random().toString(36).substring(2,8).toUpperCase();
-        document.getElementById('sid').textContent = '#' + SESSION;
+    <div class="panel span2">
+      <div class="panel-title">Oscilloscope</div>
+      <canvas id="osc" width="860" height="110"></canvas>
+    </div>
 
-        // Nouveau Relais WebSocket (Public Broadcast)
-        const WS_URL = "wss://socketsbay.com/wss/v2/1/demo/"; 
-        let ws;
+    <div class="panel">
+      <div class="panel-title">Gyroscope iPhone</div>
+      <div class="axes">
+        <div class="ax"><span class="ax-l">β</span><div class="ax-bg"><div class="ax-bar" id="bB" style="background:var(--accent); width:50%; left:25%"></div></div><span id="vB">0°</span></div>
+        <div class="ax"><span class="ax-l">γ</span><div class="ax-bg"><div class="ax-bar" id="bG" style="background:var(--accent3); width:50%; left:25%"></div></div><span id="vG">0°</span></div>
+      </div>
+    </div>
 
-        function connectWS() {
-            ws = new WebSocket(WS_URL);
-            ws.onopen = () => {
-                setDot('on', 'EN ATTENTE DE L\'IPHONE...');
-            };
-            ws.onmessage = e => {
-                const d = JSON.parse(e.data);
-                // On ne traite que les messages qui ont NOTRE session ID
-                if (d.sid === SESSION) {
-                    if (d.type === 'gyro') handleGyro(d.data);
-                    if (d.type === 'ping') setDot('on', 'IPHONE CONNECTÉ ✓');
-                }
-            };
-        }
+    <div class="panel">
+      <div class="panel-title">Note Jouée</div>
+      <div class="note-big" id="noteN">—</div>
+      <div class="note-hz" id="noteHz">— Hz</div>
+    </div>
+  </div>
 
-        function setupQR() {
-            const baseUrl = document.getElementById('controller-url').value;
-            if(!baseUrl.startsWith('http')) return;
-            
-            const fullUrl = `${baseUrl}?s=${SESSION}`;
-            const qrContainer = document.getElementById('qrcode');
-            qrContainer.innerHTML = '';
-            new QRCode(qrContainer, { text: fullUrl, width: 150, height: 150, colorDark: '#00ffcc', colorLight: '#0a0a0f' });
-            document.getElementById('stxt').textContent = "SCANNE LE QR CODE SUR TON IPHONE";
-        }
+  <button class="play" id="playBtn" onclick="togglePlay()">▶ ACTIVER LE SYNTHÉ</button>
+</div>
 
-        // ... Insère ici ton moteur audio et tes fonctions (noteOn, noteOff, etc.) ...
-        // Modifie juste handleGyro pour qu'il reçoive directement l'objet data
-        function handleGyro(data) {
-            const {alpha, beta, gamma} = data;
-            // ... Ta logique de modulation existante ...
-            gyroState = { beta, gamma };
-            // Mise à jour UI
-            document.getElementById('vB').textContent = beta.toFixed(1) + '°';
-            // etc.
-        }
-    </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+const SESSION = Math.random().toString(36).substring(2,8).toUpperCase();
+document.getElementById('sid').textContent = '#' + SESSION;
+
+const WS_URL = "wss://socketsbay.com/wss/v2/1/demo/";
+let ws, audioCtx, filt, masterGain, lfo, lfoGain, analyser, playing=false;
+let gyroState = { beta: 0, gamma: 0 };
+
+function connectWS() {
+    ws = new WebSocket(WS_URL);
+    ws.onmessage = e => {
+        try {
+            const d = JSON.parse(e.data);
+            if (d.sid === SESSION) {
+                if (d.type === 'gyro') handleGyro(d.data);
+                if (d.type === 'ping') setDot('on', 'IPHONE CONNECTÉ ✓');
+            }
+        } catch(err) {}
+    };
+    ws.onclose = () => setTimeout(connectWS, 2000);
+}
+
+function setupQR() {
+    const val = document.getElementById('ctrl-url').value;
+    if (!val.startsWith('http')) return;
+    const url = val + "?s=" + SESSION;
+    document.getElementById('qrcode').innerHTML = "";
+    new QRCode(document.getElementById('qrcode'), { text: url, width: 140, height: 140, colorDark: "#00ffcc", colorLight: "#0a0a0f" });
+    document.getElementById('stxt').textContent = "SCANNE LE QR CODE SUR TON IPHONE";
+}
+
+function handleGyro(data) {
+    gyroState = data;
+    document.getElementById('vB').textContent = data.beta.toFixed(1) + '°';
+    document.getElementById('vG').textContent = data.gamma.toFixed(1) + '°';
+    updateBars(data);
+}
+
+function updateBars(d) {
+    const b = document.getElementById('bB');
+    const p = (d.beta + 90) / 180 * 100;
+    b.style.width = Math.abs(p-50) + "%";
+    b.style.left = Math.min(p, 50) + "%";
+}
+
+async function startAudio() {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioCtx.createAnalyser();
+    filt = audioCtx.createBiquadFilter();
+    filt.type = 'lowpass';
+    masterGain = audioCtx.createGain();
+    
+    lfo = audioCtx.createOscillator();
+    lfoGain = audioCtx.createGain();
+    lfo.connect(lfoGain);
+    lfo.start();
+
+    filt.connect(masterGain);
+    masterGain.connect(analyser);
+    analyser.connect(audioCtx.destination);
+    
+    // Boucle de modulation
+    const loop = () => {
+        if(!playing) return;
+        const bNorm = (Math.max(-90, Math.min(90, gyroState.beta)) + 90) / 180;
+        filt.frequency.setTargetAtTime(200 + bNorm * 8000, audioCtx.currentTime, 0.1);
+        const gNorm = Math.abs(gyroState.gamma) / 90;
+        lfoGain.gain.setTargetAtTime(gNorm * 50, audioCtx.currentTime, 0.1);
+        requestAnimationFrame(loop);
+    };
+    loop();
+    drawOsc();
+}
+
+function togglePlay() {
+    if(!playing) {
+        startAudio();
+        playing = true;
+        connectWS();
+        document.getElementById('playBtn').classList.add('on');
+        // Son de test
+        const o = audioCtx.createOscillator();
+        o.type = 'sawtooth';
+        o.frequency.value = 220;
+        o.connect(filt);
+        o.start();
+        document.getElementById('noteN').textContent = "A3";
+    }
+}
+
+function drawOsc() {
+    requestAnimationFrame(drawOsc);
+    const cv = document.getElementById('osc'), c = cv.getContext('2d'), W = cv.width, H = cv.height;
+    c.fillStyle = '#0a0a0f'; c.fillRect(0,0,W,H);
+    if (!analyser || !playing) return;
+    const buf = new Float32Array(analyser.fftSize);
+    analyser.getFloatTimeDomainData(buf);
+    c.lineWidth = 2; c.strokeStyle = '#00ffcc'; c.beginPath();
+    for(let i=0; i<buf.length; i++) {
+        const x = i/buf.length*W, y = (1-(buf[i]+1)/2)*H;
+        i===0 ? c.moveTo(x,y) : c.lineTo(x,y);
+    }
+    c.stroke();
+}
+
+function setDot(cls, txt) {
+    document.getElementById('dot').className = 'dot ' + cls;
+    document.getElementById('stxt').textContent = txt;
+}
+</script>
 </body>
 </html>
